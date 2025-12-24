@@ -1,101 +1,145 @@
-import Image from "next/image";
+'use client';
+
+import { useState, useCallback } from 'react';
+import { DndContext, DragEndEvent, DragOverlay, DragStartEvent, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
+import ChristmasTree from '@/components/ChristmasTree';
+import OrnamentPalette from '@/components/OrnamentPalette';
+import MerryChristmas from '@/components/MerryChristmas';
+import NightModeToggle from '@/components/NightModeToggle';
+import SnowEffect from '@/components/SnowEffect';
+import Stars from '@/components/Stars';
+import { PlacedOrnament, ORNAMENTS } from '@/components/types';
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="https://nextjs.org/icons/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+  const [placedOrnaments, setPlacedOrnaments] = useState<PlacedOrnament[]>([]);
+  const [isNightMode, setIsNightMode] = useState(false);
+  const [showMerryChristmas, setShowMerryChristmas] = useState(false);
+  const [activeId, setActiveId] = useState<string | null>(null);
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="https://nextjs.org/icons/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 5,
+      },
+    })
+  );
+
+  const handleDragStart = (event: DragStartEvent) => {
+    setActiveId(event.active.id as string);
+  };
+
+  // Generate a random position within the tree triangle
+  const getRandomTreePosition = () => {
+    // Tree triangle: top at (50, 10), bottom-left at (10, 80), bottom-right at (90, 80)
+    const y = 15 + Math.random() * 60; // 15% to 75% height
+    // Width narrows as we go up the tree
+    const widthAtY = ((y - 10) / 70) * 40; // 0 at top, 40 at bottom
+    const centerX = 50;
+    const x = centerX + (Math.random() - 0.5) * widthAtY * 2;
+    return { x: Math.max(20, Math.min(80, x)), y };
+  };
+
+  const handleDragEnd = useCallback((event: DragEndEvent) => {
+    setActiveId(null);
+    const { active, over } = event;
+
+    if (over && over.id === 'christmas-tree') {
+      const ornament = ORNAMENTS.find((o) => o.id === active.id);
+      if (ornament) {
+        // Place at a random position within the tree shape
+        const { x, y } = getRandomTreePosition();
+
+        const newOrnament: PlacedOrnament = {
+          ...ornament,
+          id: `${ornament.id}-${Date.now()}`,
+          x,
+          y,
+        };
+
+        setPlacedOrnaments((prev) => {
+          const updated = [...prev, newOrnament];
+          // Check if we've reached 5 ornaments
+          if (updated.length >= 5 && !showMerryChristmas) {
+            setShowMerryChristmas(true);
+          }
+          return updated;
+        });
+      }
+    }
+  }, [showMerryChristmas]);
+
+  const handleReset = () => {
+    setPlacedOrnaments([]);
+    setShowMerryChristmas(false);
+  };
+
+  const activeOrnament = activeId ? ORNAMENTS.find((o) => o.id === activeId) : null;
+
+  return (
+    <DndContext sensors={sensors} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
+      <main
+        className={`min-h-screen transition-all duration-500 ${
+          isNightMode ? 'night-mode' : 'bg-gradient-to-b from-sky-200 via-sky-100 to-white'
+        }`}
+      >
+        {/* Night mode effects */}
+        {isNightMode && <Stars />}
+        {isNightMode && <SnowEffect />}
+
+        {/* Night mode toggle */}
+        <NightModeToggle isNightMode={isNightMode} onToggle={() => setIsNightMode(!isNightMode)} />
+
+        {/* Header */}
+        <header className="pt-16 pb-4 text-center relative z-20">
+          <h1 className={`text-3xl md:text-5xl font-bold ${isNightMode ? 'text-white' : 'text-green-800'}`}>
+            🎄 Decorate Your Christmas Tree! 🎄
+          </h1>
+          <p className={`mt-2 text-sm md:text-base ${isNightMode ? 'text-gray-300' : 'text-gray-600'}`}>
+            Drag and drop ornaments onto the tree
+          </p>
+          <div className={`mt-2 text-lg font-semibold ${isNightMode ? 'text-yellow-300' : 'text-red-600'}`}>
+            Ornaments: {placedOrnaments.length} / 5
+            {placedOrnaments.length >= 5 && ' 🎉'}
+          </div>
+        </header>
+
+        {/* Tree container */}
+        <div className="container mx-auto px-4 pb-8 relative z-20">
+          <div className="flex flex-col lg:flex-row gap-8 items-center justify-center">
+            {/* Christmas Tree */}
+            <div className="w-full max-w-md lg:max-w-lg">
+              <ChristmasTree placedOrnaments={placedOrnaments} isNightMode={isNightMode} />
+            </div>
+          </div>
+
+          {/* Ornament Palette */}
+          <div className="mt-8">
+            <OrnamentPalette />
+          </div>
+
+          {/* Reset button */}
+          <div className="mt-6 text-center">
+            <button
+              onClick={handleReset}
+              className="px-6 py-3 bg-red-500 hover:bg-red-600 text-white font-bold rounded-full shadow-lg hover:shadow-xl transition-all duration-200"
+            >
+              🔄 Reset
+            </button>
+          </div>
         </div>
+
+        {/* Merry Christmas animation */}
+        {showMerryChristmas && <MerryChristmas />}
+
+        {/* Drag overlay */}
+        <DragOverlay>
+          {activeOrnament ? (
+            <div className="text-4xl cursor-grabbing transform scale-125">
+              {activeOrnament.emoji}
+            </div>
+          ) : null}
+        </DragOverlay>
       </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+    </DndContext>
   );
 }
