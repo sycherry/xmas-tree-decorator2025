@@ -87,7 +87,6 @@ export default function ChristmasTree({ placedOrnaments, isNightMode }: Christma
         <polygon
           points="50,5 52,12 59,12 53,16 55,23 50,19 45,23 47,16 41,12 48,12"
           fill="#FFD700"
-          className={isNightMode ? 'star-sparkle' : ''}
           filter={isNightMode ? 'url(#glow)' : ''}
         />
 

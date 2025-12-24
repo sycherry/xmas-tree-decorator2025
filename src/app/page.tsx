@@ -28,26 +28,30 @@ export default function Home() {
     setActiveId(event.active.id as string);
   };
 
-  // Generate a random position within the tree triangle
-  const getRandomTreePosition = () => {
-    // Tree triangle: top at (50, 10), bottom-left at (10, 80), bottom-right at (90, 80)
-    const y = 15 + Math.random() * 60; // 15% to 75% height
-    // Width narrows as we go up the tree
-    const widthAtY = ((y - 10) / 70) * 40; // 0 at top, 40 at bottom
-    const centerX = 50;
-    const x = centerX + (Math.random() - 0.5) * widthAtY * 2;
-    return { x: Math.max(20, Math.min(80, x)), y };
-  };
-
   const handleDragEnd = useCallback((event: DragEndEvent) => {
     setActiveId(null);
     const { active, over } = event;
 
-    if (over && over.id === 'christmas-tree') {
+    if (over && over.id === 'christmas-tree' && over.rect) {
       const ornament = ORNAMENTS.find((o) => o.id === active.id);
       if (ornament) {
-        // Place at a random position within the tree shape
-        const { x, y } = getRandomTreePosition();
+        const treeRect = over.rect;
+
+        // Get the final pointer position
+        const activatorEvent = event.activatorEvent as PointerEvent;
+        const delta = event.delta;
+
+        // Calculate final position (start position + drag delta)
+        const finalX = activatorEvent.clientX + delta.x;
+        const finalY = activatorEvent.clientY + delta.y;
+
+        // Convert to percentage relative to tree
+        let x = ((finalX - treeRect.left) / treeRect.width) * 100;
+        let y = ((finalY - treeRect.top) / treeRect.height) * 100;
+
+        // Clamp to tree bounds
+        x = Math.max(15, Math.min(85, x));
+        y = Math.max(10, Math.min(80, y));
 
         const newOrnament: PlacedOrnament = {
           ...ornament,
@@ -97,9 +101,17 @@ export default function Home() {
           <p className={`mt-2 text-sm md:text-base ${isNightMode ? 'text-gray-300' : 'text-gray-600'}`}>
             Drag and drop ornaments onto the tree
           </p>
-          <div className={`mt-2 text-lg font-semibold ${isNightMode ? 'text-yellow-300' : 'text-red-600'}`}>
-            Ornaments: {placedOrnaments.length} / 5
-            {placedOrnaments.length >= 5 && ' 🎉'}
+          <div className={`mt-2 text-lg font-semibold flex items-center justify-center gap-4 ${isNightMode ? 'text-yellow-300' : 'text-red-600'}`}>
+            <span>
+              Ornaments: {placedOrnaments.length} / 5
+              {placedOrnaments.length >= 5 && ' 🎉'}
+            </span>
+            <button
+              onClick={handleReset}
+              className="px-4 py-1 bg-red-500 hover:bg-red-600 text-white text-sm font-bold rounded-full shadow hover:shadow-lg transition-all duration-200"
+            >
+              🔄 Reset
+            </button>
           </div>
         </header>
 
@@ -117,15 +129,6 @@ export default function Home() {
             <OrnamentPalette />
           </div>
 
-          {/* Reset button */}
-          <div className="mt-6 text-center">
-            <button
-              onClick={handleReset}
-              className="px-6 py-3 bg-red-500 hover:bg-red-600 text-white font-bold rounded-full shadow-lg hover:shadow-xl transition-all duration-200"
-            >
-              🔄 Reset
-            </button>
-          </div>
         </div>
 
         {/* Merry Christmas animation */}
