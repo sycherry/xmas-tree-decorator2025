@@ -11,6 +11,9 @@ import SnowEffect from '@/components/SnowEffect';
 import ComboSnowEffect from '@/components/ComboSnowEffect';
 import SantaReindeerCombo from '@/components/SantaReindeerCombo';
 import SantaWithGift from '@/components/SantaWithGift';
+import MoneyRainCombo from '@/components/MoneyRainCombo';
+import SpaceInvadersCombo from '@/components/SpaceInvadersCombo';
+import UFOAbductionCombo from '@/components/UFOAbductionCombo';
 import HintModal from '@/components/HintModal';
 import Stars from '@/components/Stars';
 import { PlacedOrnament, ORNAMENTS, Ornament } from '@/components/types';
@@ -26,6 +29,10 @@ export default function Home() {
   const [comboSnowActive, setComboSnowActive] = useState(false);
   const [santaReindeerActive, setSantaReindeerActive] = useState(false);
   const [santaWithGiftActive, setSantaWithGiftActive] = useState(false);
+  const [moneyRainActive, setMoneyRainActive] = useState(false);
+  const [spaceInvadersActive, setSpaceInvadersActive] = useState(false);
+  const [gameFontActive, setGameFontActive] = useState(false);
+  const [ufoAbductionActive, setUfoAbductionActive] = useState(false);
   const [showHintModal, setShowHintModal] = useState(false);
   const treeContainerRef = useRef<HTMLDivElement>(null);
 
@@ -48,6 +55,36 @@ export default function Home() {
       return () => clearTimeout(timer);
     }
   }, [santaReindeerActive]);
+
+  // Auto-hide money rain combo after 3 seconds
+  useEffect(() => {
+    if (moneyRainActive) {
+      const timer = setTimeout(() => {
+        setMoneyRainActive(false);
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [moneyRainActive]);
+
+  // Auto-hide space invaders combo after 8 seconds
+  useEffect(() => {
+    if (spaceInvadersActive) {
+      const timer = setTimeout(() => {
+        setSpaceInvadersActive(false);
+      }, 8000);
+      return () => clearTimeout(timer);
+    }
+  }, [spaceInvadersActive]);
+
+  // Auto-hide UFO abduction combo after 5 seconds
+  useEffect(() => {
+    if (ufoAbductionActive) {
+      const timer = setTimeout(() => {
+        setUfoAbductionActive(false);
+      }, 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [ufoAbductionActive]);
 
   // Check for ornament combos
   const checkCombo = (currentOrnamentId: string) => {
@@ -76,6 +113,35 @@ export default function Home() {
 
     if ((isGift && lastWasSanta) || (isSanta && lastPlacedOrnamentId === 'gift')) {
       setSantaWithGiftActive(true);
+    }
+
+    // Diamond + Diamond combo
+    const isDiamond = currentOrnamentId === 'diamond';
+    const lastWasDiamond = lastPlacedOrnamentId === 'diamond';
+
+    if (isDiamond && lastWasDiamond) {
+      setMoneyRainActive(true);
+    }
+
+    // Retro Game + Controller combo
+    const isRetroGame = currentOrnamentId === 'retro-game';
+    const isController = currentOrnamentId === 'controller';
+    const lastWasRetroGame = lastPlacedOrnamentId === 'retro-game';
+    const lastWasController = lastPlacedOrnamentId === 'controller';
+
+    if ((isRetroGame && lastWasController) || (isController && lastWasRetroGame)) {
+      setSpaceInvadersActive(true);
+      setGameFontActive(true);
+    }
+
+    // Photo + Alien combo (UFO Abduction)
+    const isPhoto = currentOrnamentId.startsWith('photo');
+    const isAlien = currentOrnamentId === 'alien';
+    const lastWasPhoto = lastPlacedOrnamentId?.startsWith('photo') || false;
+    const lastWasAlien = lastPlacedOrnamentId === 'alien';
+
+    if ((isPhoto && lastWasAlien) || (isAlien && lastWasPhoto)) {
+      setUfoAbductionActive(true);
     }
   };
 
@@ -175,6 +241,10 @@ export default function Home() {
     setComboSnowActive(false);
     setSantaReindeerActive(false);
     setSantaWithGiftActive(false);
+    setMoneyRainActive(false);
+    setSpaceInvadersActive(false);
+    setGameFontActive(false);
+    setUfoAbductionActive(false);
   };
 
   const handlePhotoUpload = (ornament: Ornament) => {
@@ -233,36 +303,42 @@ export default function Home() {
         {comboSnowActive && <ComboSnowEffect />}
         {santaReindeerActive && <SantaReindeerCombo />}
         {santaWithGiftActive && <SantaWithGift />}
+        {moneyRainActive && <MoneyRainCombo />}
+        {spaceInvadersActive && <SpaceInvadersCombo />}
+        {ufoAbductionActive && <UFOAbductionCombo photoUrl={customOrnaments[0]?.imageUrl} />}
 
         {/* Night mode toggle */}
         <NightModeToggle isNightMode={isNightMode} onToggle={() => setIsNightMode(!isNightMode)} />
 
         {/* Header */}
         <header className="pt-4 text-center relative z-20 flex-shrink-0">
-          <h1 className={`text-2xl md:text-4xl font-bold ${isNightMode ? 'text-white' : 'text-green-800'}`}>
-            🎄 Decorate Your <span className="hidden md:inline">Christmas </span>Tree! 🎄
+          <h1 className={`text-2xl md:text-4xl font-bold ${isNightMode ? 'text-white' : 'text-green-800'} ${gameFontActive ? 'font-mono text-green-400' : ''}`} style={gameFontActive ? { textShadow: '0 0 10px rgba(0, 255, 0, 0.8)' } : {}}>
+            {gameFontActive ? '👾 DECORATE YOUR TREE! 👾' : '🎄 Decorate Your '}{!gameFontActive && <span className="hidden md:inline">Christmas </span>}{!gameFontActive && 'Tree! 🎄'}
           </h1>
-          <p className={`mt-3 text-sm md:text-base ${isNightMode ? 'text-gray-300' : 'text-gray-600'}`}>
-            No tree at home? Get into the Christmas spirit online!
+          <p className={`mt-3 text-sm md:text-base ${isNightMode ? 'text-gray-300' : 'text-gray-600'} ${gameFontActive ? 'font-mono text-green-400' : ''}`} style={gameFontActive ? { textShadow: '0 0 5px rgba(0, 255, 0, 0.6)' } : {}}>
+            {gameFontActive ? 'INSERT COIN TO CONTINUE...' : 'No tree at home? Get into the Christmas spirit online!'}
           </p>
           <div className="mt-3 flex items-center justify-center gap-3">
             <button
               onClick={handleReset}
-              className="px-4 py-2 bg-red-500 hover:bg-red-600 text-white text-sm font-bold rounded-full shadow hover:shadow-lg transition-all duration-200"
+              className={`px-4 py-2 text-white text-sm font-bold rounded-full shadow hover:shadow-lg transition-all duration-200 ${gameFontActive ? 'bg-green-700 hover:bg-green-600 font-mono' : 'bg-red-500 hover:bg-red-600'}`}
+              style={gameFontActive ? { textShadow: '0 0 5px rgba(0, 255, 0, 0.8)' } : {}}
             >
-              🔄 Reset
+              {gameFontActive ? '[RESET]' : '🔄 Reset'}
             </button>
             <button
               onClick={() => setShowHintModal(true)}
-              className="px-4 py-2 bg-yellow-500 hover:bg-yellow-600 text-white text-sm font-bold rounded-full shadow hover:shadow-lg transition-all duration-200"
+              className={`px-4 py-2 text-white text-sm font-bold rounded-full shadow hover:shadow-lg transition-all duration-200 ${gameFontActive ? 'bg-green-700 hover:bg-green-600 font-mono' : 'bg-yellow-500 hover:bg-yellow-600'}`}
+              style={gameFontActive ? { textShadow: '0 0 5px rgba(0, 255, 0, 0.8)' } : {}}
             >
-              💡 Hint
+              {gameFontActive ? '[HINT]' : '💡 Hint'}
             </button>
             <button
               onClick={handleComplete}
-              className="px-4 py-2 bg-green-500 hover:bg-green-600 text-white text-sm font-bold rounded-full shadow hover:shadow-lg transition-all duration-200"
+              className={`px-4 py-2 text-white text-sm font-bold rounded-full shadow hover:shadow-lg transition-all duration-200 ${gameFontActive ? 'bg-green-700 hover:bg-green-600 font-mono' : 'bg-green-500 hover:bg-green-600'}`}
+              style={gameFontActive ? { textShadow: '0 0 5px rgba(0, 255, 0, 0.8)' } : {}}
             >
-              🎄 Complete!
+              {gameFontActive ? '[COMPLETE]' : '🎄 Complete!'}
             </button>
           </div>
         </header>
@@ -304,7 +380,7 @@ export default function Home() {
 
         {/* Ornament Palette - Full width on PC */}
         <div className="flex-shrink-0 pb-4 px-2 lg:px-4 w-full relative z-20 safe-area-bottom">
-          <OrnamentPalette onRandom={handleRandom} onPhotoUpload={handlePhotoUpload} customOrnaments={customOrnaments} />
+          <OrnamentPalette onRandom={handleRandom} onPhotoUpload={handlePhotoUpload} customOrnaments={customOrnaments} gameFontActive={gameFontActive} />
         </div>
 
         {/* Merry Christmas animation */}

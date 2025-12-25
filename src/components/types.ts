@@ -11,15 +11,12 @@ export interface PlacedOrnament extends Ornament {
 }
 
 export const ORNAMENTS: Ornament[] = [
-  { id: 'gold-ball', emoji: '🟡', name: 'Gold Ball' },
-  { id: 'ribbon', emoji: '🎀', name: 'Ribbon' },
   { id: 'gift', emoji: '🎁', name: 'Gift' },
   { id: 'snowflake', emoji: '❄️', name: 'Snowflake' },
   { id: 'reindeer', emoji: '🦌', name: 'Reindeer' },
   { id: 'snowman', emoji: '⛄', name: 'Snowman' },
   { id: 'santa', emoji: '🎅', name: 'Santa' },
   { id: 'stocking', emoji: '🧦', name: 'Stocking' },
-  { id: 'candy', emoji: '🍭', name: 'Candy' },
   { id: 'diamond', emoji: '💎', name: 'Diamond' },
   { id: 'alien', emoji: '👽', name: 'Alien' },
   { id: 'retro-game', emoji: '👾', name: 'Retro Game' },

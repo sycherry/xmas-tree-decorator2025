@@ -41,6 +41,18 @@ export default function HintModal({ onClose }: HintModalProps) {
           <div className="bg-white/80 rounded-lg p-3 shadow">
             <div className="text-3xl text-center">🎅 + 🎁 = ?</div>
           </div>
+
+          <div className="bg-white/80 rounded-lg p-3 shadow">
+            <div className="text-3xl text-center">💎 + 💎 = ?</div>
+          </div>
+
+          <div className="bg-white/80 rounded-lg p-3 shadow">
+            <div className="text-3xl text-center">👾 + 🎮 = ?</div>
+          </div>
+
+          <div className="bg-white/80 rounded-lg p-3 shadow">
+            <div className="text-3xl text-center">📷 + 👽 = ?</div>
+          </div>
         </div>
       </div>
     </div>
