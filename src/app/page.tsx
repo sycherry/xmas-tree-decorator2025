@@ -14,7 +14,6 @@ export default function Home() {
   const [placedOrnaments, setPlacedOrnaments] = useState<PlacedOrnament[]>([]);
   const [isNightMode, setIsNightMode] = useState(false);
   const [showMerryChristmas, setShowMerryChristmas] = useState(false);
-  const [hasShownCelebration, setHasShownCelebration] = useState(false);
   const [activeId, setActiveId] = useState<string | null>(null);
 
   const sensors = useSensors(
@@ -95,23 +94,18 @@ export default function Home() {
           y: clampedY,
         };
 
-        setPlacedOrnaments((prev) => {
-          const updated = [...prev, newOrnament];
-          // Check if we've reached exactly 5 ornaments and haven't shown celebration yet
-          if (updated.length === 5 && !hasShownCelebration) {
-            setShowMerryChristmas(true);
-            setHasShownCelebration(true);
-          }
-          return updated;
-        });
+        setPlacedOrnaments((prev) => [...prev, newOrnament]);
       }
     }
-  }, [hasShownCelebration]);
+  }, []);
 
   const handleReset = () => {
     setPlacedOrnaments([]);
     setShowMerryChristmas(false);
-    setHasShownCelebration(false);
+  };
+
+  const handleComplete = () => {
+    setShowMerryChristmas(true);
   };
 
   const activeOrnament = activeId ? ORNAMENTS.find((o) => o.id === activeId) : null;
@@ -138,16 +132,18 @@ export default function Home() {
           <p className={`mt-3 text-sm md:text-base ${isNightMode ? 'text-gray-300' : 'text-gray-600'}`}>
             Drag & drop ornaments to decorate the tree
           </p>
-          <div className={`mt-1 text-base font-semibold flex items-center justify-center gap-4 ${isNightMode ? 'text-yellow-300' : 'text-red-600'}`}>
-            <span>
-              Ornaments: {placedOrnaments.length} / 5
-              {placedOrnaments.length >= 5 && ' 🎉'}
-            </span>
+          <div className="mt-3 flex items-center justify-center gap-3">
             <button
               onClick={handleReset}
-              className="px-3 py-1 bg-red-500 hover:bg-red-600 text-white text-sm font-bold rounded-full shadow hover:shadow-lg transition-all duration-200"
+              className="px-4 py-2 bg-red-500 hover:bg-red-600 text-white text-sm font-bold rounded-full shadow hover:shadow-lg transition-all duration-200"
             >
               🔄 Reset
+            </button>
+            <button
+              onClick={handleComplete}
+              className="px-4 py-2 bg-green-500 hover:bg-green-600 text-white text-sm font-bold rounded-full shadow hover:shadow-lg transition-all duration-200"
+            >
+              🎄 Complete!
             </button>
           </div>
         </header>
