@@ -1,6 +1,7 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useRef } from 'react';
+import html2canvas from 'html2canvas';
 import { DndContext, DragEndEvent, DragOverlay, DragStartEvent, PointerSensor, TouchSensor, useSensor, useSensors } from '@dnd-kit/core';
 import ChristmasTree from '@/components/ChristmasTree';
 import OrnamentPalette from '@/components/OrnamentPalette';
@@ -15,6 +16,8 @@ export default function Home() {
   const [isNightMode, setIsNightMode] = useState(false);
   const [showMerryChristmas, setShowMerryChristmas] = useState(false);
   const [activeId, setActiveId] = useState<string | null>(null);
+  const [treeImage, setTreeImage] = useState<string | null>(null);
+  const treeContainerRef = useRef<HTMLDivElement>(null);
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -102,9 +105,18 @@ export default function Home() {
   const handleReset = () => {
     setPlacedOrnaments([]);
     setShowMerryChristmas(false);
+    setTreeImage(null);
   };
 
-  const handleComplete = () => {
+  const handleComplete = async () => {
+    if (treeContainerRef.current) {
+      const canvas = await html2canvas(treeContainerRef.current, {
+        backgroundColor: null,
+        scale: 2,
+      });
+      const imageData = canvas.toDataURL('image/png');
+      setTreeImage(imageData);
+    }
     setShowMerryChristmas(true);
   };
 
@@ -152,7 +164,7 @@ export default function Home() {
         <div className="flex-1 container mx-auto px-4 relative z-20 flex flex-col overflow-hidden">
           {/* Christmas Tree */}
           <div className="flex-1 flex items-center justify-center min-h-0">
-            <div className="w-full max-w-xs md:max-w-sm h-full max-h-full">
+            <div ref={treeContainerRef} className="w-full max-w-xs md:max-w-sm h-full max-h-full">
               <ChristmasTree placedOrnaments={placedOrnaments} isNightMode={isNightMode} />
             </div>
           </div>
@@ -164,7 +176,7 @@ export default function Home() {
         </div>
 
         {/* Merry Christmas animation */}
-        {showMerryChristmas && <MerryChristmas onClose={() => setShowMerryChristmas(false)} />}
+        {showMerryChristmas && <MerryChristmas onClose={() => setShowMerryChristmas(false)} treeImage={treeImage} />}
 
         {/* Drag overlay */}
         <DragOverlay>
