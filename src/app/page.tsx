@@ -13,7 +13,7 @@ import { PlacedOrnament, ORNAMENTS, Ornament } from '@/components/types';
 
 export default function Home() {
   const [placedOrnaments, setPlacedOrnaments] = useState<PlacedOrnament[]>([]);
-  const [isNightMode, setIsNightMode] = useState(false);
+  const [isNightMode, setIsNightMode] = useState(true);
   const [showMerryChristmas, setShowMerryChristmas] = useState(false);
   const [activeId, setActiveId] = useState<string | null>(null);
   const [treeImage, setTreeImage] = useState<string | null>(null);
