@@ -54,11 +54,11 @@ export default function ChristmasTree({ placedOrnaments, isNightMode }: Christma
       className={`relative w-full max-w-md mx-auto transition-all duration-300 ${
         isOver ? 'drop-zone-active scale-105' : ''
       }`}
-      style={{ aspectRatio: '3/4' }}
+      style={{ aspectRatio: '100/115' }}
     >
       {/* Tree SVG */}
       <svg
-        viewBox="0 0 100 120"
+        viewBox="0 3 100 115"
         className="w-full h-full absolute inset-0"
         style={{ filter: isNightMode ? 'brightness(0.8)' : 'none', zIndex: 1 }}
       >

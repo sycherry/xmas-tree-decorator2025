@@ -190,11 +190,32 @@ export default function Home() {
         </header>
 
         {/* Tree container */}
-        <div className="flex-1 container mx-auto px-4 relative z-20 flex flex-col overflow-hidden">
+        <div className="flex-1 container mx-auto px-4 relative z-20 flex flex-col">
           {/* Christmas Tree */}
           <div className="flex-1 flex items-center justify-center min-h-0">
-            <div ref={treeContainerRef} className="w-full max-w-xs md:max-w-sm h-full max-h-full">
-              <ChristmasTree placedOrnaments={placedOrnaments} isNightMode={isNightMode} />
+            <div className="relative w-full max-w-xs md:max-w-sm" style={{ aspectRatio: '100/115' }}>
+              <div ref={treeContainerRef} className="w-full h-full">
+                <ChristmasTree placedOrnaments={placedOrnaments} isNightMode={isNightMode} />
+              </div>
+              {/* Snow ground for day mode - positioned at bottom of tree */}
+              {!isNightMode && (
+                <div className="absolute bottom-0 left-1/2 -translate-x-1/2 pointer-events-none z-0" style={{ height: '110px', width: '200vw' }}>
+                  <svg
+                    viewBox="0 0 400 70"
+                    preserveAspectRatio="none"
+                    className="w-full h-full"
+                  >
+                    <ellipse cx="80" cy="70" rx="180" ry="35" fill="#7dd3fc" />
+                    <ellipse cx="320" cy="70" rx="160" ry="30" fill="#7dd3fc" />
+                    <ellipse cx="50" cy="70" rx="150" ry="28" fill="#bae6fd" />
+                    <ellipse cx="350" cy="70" rx="140" ry="25" fill="#bae6fd" />
+                    <ellipse cx="200" cy="70" rx="180" ry="22" fill="#bae6fd" />
+                    <ellipse cx="0" cy="75" rx="140" ry="20" fill="white" />
+                    <ellipse cx="200" cy="75" rx="200" ry="25" fill="white" />
+                    <ellipse cx="400" cy="75" rx="150" ry="22" fill="white" />
+                  </svg>
+                </div>
+              )}
             </div>
           </div>
         </div>
