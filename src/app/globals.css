@@ -152,3 +152,8 @@ body {
   z-index: 100;
 }
 
+/* Safe area for Android/iOS navigation bar */
+.safe-area-bottom {
+  padding-bottom: calc(1rem + env(safe-area-inset-bottom, 0px));
+}
+

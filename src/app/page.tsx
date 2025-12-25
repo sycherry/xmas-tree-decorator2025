@@ -119,7 +119,7 @@ export default function Home() {
   return (
     <DndContext sensors={sensors} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
       <main
-        className={`h-screen overflow-hidden flex flex-col transition-all duration-500 ${
+        className={`h-dvh overflow-hidden flex flex-col transition-all duration-500 ${
           isNightMode ? 'night-mode' : 'bg-gradient-to-b from-sky-200 via-sky-100 to-white'
         }`}
       >
@@ -131,9 +131,9 @@ export default function Home() {
         <NightModeToggle isNightMode={isNightMode} onToggle={() => setIsNightMode(!isNightMode)} />
 
         {/* Header */}
-        <header className="pt-4 pb-2 text-center relative z-20 flex-shrink-0">
+        <header className="pt-4 text-center relative z-20 flex-shrink-0">
           <h1 className={`text-2xl md:text-4xl font-bold ${isNightMode ? 'text-white' : 'text-green-800'}`}>
-            🎄 Decorate Your Christmas Tree! 🎄
+            🎄 Decorate Your <br className="md:hidden" />Christmas Tree! 🎄
           </h1>
           <p className={`mt-1 text-sm md:text-base ${isNightMode ? 'text-gray-300' : 'text-gray-600'}`}>
             Drag & drop ornaments to decorate the tree
@@ -163,7 +163,7 @@ export default function Home() {
         </div>
 
         {/* Ornament Palette - Full width on PC */}
-        <div className="flex-shrink-0 pb-4 px-2 lg:px-4 w-full relative z-20">
+        <div className="flex-shrink-0 pb-4 px-2 lg:px-4 w-full relative z-20 safe-area-bottom">
           <OrnamentPalette />
         </div>
 
