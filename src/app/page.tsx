@@ -189,33 +189,37 @@ export default function Home() {
           </div>
         </header>
 
+        {/* Snow ground for day mode - fixed at bottom */}
+        {!isNightMode && (
+          <div className="fixed bottom-0 left-0 right-0 pointer-events-none z-10" style={{ height: '700px' }}>
+            <svg
+              viewBox="0 0 400 700"
+              preserveAspectRatio="none"
+              className="w-full h-full"
+            >
+              {/* Back layer - darker blue */}
+              <ellipse cx="80" cy="700" rx="400" ry="400" fill="#7dd3fc" />
+              <ellipse cx="320" cy="700" rx="380" ry="360" fill="#7dd3fc" />
+              {/* Middle layer - lighter blue */}
+              <ellipse cx="50" cy="700" rx="350" ry="300" fill="#bae6fd" />
+              <ellipse cx="350" cy="700" rx="330" ry="280" fill="#bae6fd" />
+              <ellipse cx="200" cy="700" rx="380" ry="260" fill="#bae6fd" />
+              {/* Front layer - white */}
+              <ellipse cx="0" cy="700" rx="320" ry="200" fill="white" />
+              <ellipse cx="200" cy="700" rx="400" ry="180" fill="white" />
+              <ellipse cx="400" cy="700" rx="340" ry="190" fill="white" />
+            </svg>
+          </div>
+        )}
+
         {/* Tree container */}
-        <div className="flex-1 container mx-auto px-4 relative z-20 flex flex-col">
+        <div className="flex-1 container mx-auto px-4 relative z-20 flex flex-col overflow-hidden">
           {/* Christmas Tree */}
           <div className="flex-1 flex items-center justify-center min-h-0">
             <div className="relative w-full max-w-xs md:max-w-sm" style={{ aspectRatio: '100/115' }}>
               <div ref={treeContainerRef} className="w-full h-full">
                 <ChristmasTree placedOrnaments={placedOrnaments} isNightMode={isNightMode} />
               </div>
-              {/* Snow ground for day mode - positioned at bottom of tree */}
-              {!isNightMode && (
-                <div className="absolute bottom-0 left-1/2 -translate-x-1/2 pointer-events-none z-0" style={{ height: '110px', width: '200vw' }}>
-                  <svg
-                    viewBox="0 0 400 70"
-                    preserveAspectRatio="none"
-                    className="w-full h-full"
-                  >
-                    <ellipse cx="80" cy="70" rx="180" ry="35" fill="#7dd3fc" />
-                    <ellipse cx="320" cy="70" rx="160" ry="30" fill="#7dd3fc" />
-                    <ellipse cx="50" cy="70" rx="150" ry="28" fill="#bae6fd" />
-                    <ellipse cx="350" cy="70" rx="140" ry="25" fill="#bae6fd" />
-                    <ellipse cx="200" cy="70" rx="180" ry="22" fill="#bae6fd" />
-                    <ellipse cx="0" cy="75" rx="140" ry="20" fill="white" />
-                    <ellipse cx="200" cy="75" rx="200" ry="25" fill="white" />
-                    <ellipse cx="400" cy="75" rx="150" ry="22" fill="white" />
-                  </svg>
-                </div>
-              )}
             </div>
           </div>
         </div>
