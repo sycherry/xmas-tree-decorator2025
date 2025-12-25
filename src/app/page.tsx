@@ -133,9 +133,9 @@ export default function Home() {
         {/* Header */}
         <header className="pt-4 text-center relative z-20 flex-shrink-0">
           <h1 className={`text-2xl md:text-4xl font-bold ${isNightMode ? 'text-white' : 'text-green-800'}`}>
-            🎄 Decorate Your <br className="md:hidden" />Christmas Tree! 🎄
+            🎄 Decorate Your <span className="hidden md:inline">Christmas </span>Tree! 🎄
           </h1>
-          <p className={`mt-1 text-sm md:text-base ${isNightMode ? 'text-gray-300' : 'text-gray-600'}`}>
+          <p className={`mt-3 text-sm md:text-base ${isNightMode ? 'text-gray-300' : 'text-gray-600'}`}>
             Drag & drop ornaments to decorate the tree
           </p>
           <div className={`mt-1 text-base font-semibold flex items-center justify-center gap-4 ${isNightMode ? 'text-yellow-300' : 'text-red-600'}`}>
