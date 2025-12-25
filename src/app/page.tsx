@@ -199,7 +199,7 @@ export default function Home() {
         </div>
 
         {/* Merry Christmas animation */}
-        {showMerryChristmas && <MerryChristmas onClose={() => setShowMerryChristmas(false)} treeImage={treeImage} />}
+        {showMerryChristmas && <MerryChristmas onClose={() => setShowMerryChristmas(false)} treeImage={treeImage} treeRef={treeContainerRef} />}
 
         {/* Drag overlay */}
         <DragOverlay>

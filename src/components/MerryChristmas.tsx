@@ -1,6 +1,8 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, RefObject } from 'react';
+import html2canvas from 'html2canvas';
+import { GIFEncoder, quantize, applyPalette } from 'gifenc';
 
 interface Sparkle {
   id: number;
@@ -13,11 +15,13 @@ interface Sparkle {
 interface MerryChristmasProps {
   onClose: () => void;
   treeImage: string | null;
+  treeRef: RefObject<HTMLDivElement | null>;
 }
 
-export default function MerryChristmas({ onClose, treeImage }: MerryChristmasProps) {
+export default function MerryChristmas({ onClose, treeImage, treeRef }: MerryChristmasProps) {
   const [sparkles, setSparkles] = useState<Sparkle[]>([]);
   const [canShare, setCanShare] = useState(false);
+  const [isCreatingGif, setIsCreatingGif] = useState(false);
 
   useEffect(() => {
     setCanShare(typeof navigator !== 'undefined' && !!navigator.share);
@@ -47,6 +51,94 @@ export default function MerryChristmas({ onClose, treeImage }: MerryChristmasPro
       }
     } catch (error) {
       console.log('Share cancelled or failed:', error);
+    }
+  };
+
+  const createAnimatedGif = async () => {
+    if (!treeRef.current) return;
+    setIsCreatingGif(true);
+
+    try {
+      const frameCount = 8;
+      const frameDelay = 200; // ms between frames
+      const width = 300;
+      const height = 400;
+
+      const gif = GIFEncoder();
+
+      // Capture the tree once
+      const treeCanvas = await html2canvas(treeRef.current, {
+        backgroundColor: null,
+        scale: 1,
+      });
+
+      // Create frames with sparkle animation
+      for (let i = 0; i < frameCount; i++) {
+        const canvas = document.createElement('canvas');
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        if (!ctx) continue;
+
+        // Draw background
+        ctx.fillStyle = '#1a1a2e';
+        ctx.fillRect(0, 0, width, height);
+
+        // Draw tree centered
+        const scale = Math.min(width / treeCanvas.width, height / treeCanvas.height) * 0.9;
+        const x = (width - treeCanvas.width * scale) / 2;
+        const y = (height - treeCanvas.height * scale) / 2;
+        ctx.drawImage(treeCanvas, x, y, treeCanvas.width * scale, treeCanvas.height * scale);
+
+        // Draw sparkles with animation
+        const sparkleEmojis = ['✨', '⭐', '🌟', '💫'];
+        ctx.font = '16px serif';
+        for (let j = 0; j < 12; j++) {
+          const sparkleX = 20 + (j * 23) % (width - 40);
+          const sparkleY = 20 + ((j * 37 + i * 50) % (height - 40));
+          const opacity = 0.5 + Math.sin((i + j) * 0.8) * 0.5;
+          ctx.globalAlpha = opacity;
+          ctx.fillText(sparkleEmojis[j % 4], sparkleX, sparkleY);
+        }
+        ctx.globalAlpha = 1;
+
+        // Add "Merry Christmas" text
+        ctx.fillStyle = '#ffffff';
+        ctx.font = 'bold 20px Arial';
+        ctx.textAlign = 'center';
+        ctx.fillText('Merry Christmas!', width / 2, height - 30);
+
+        // Convert to indexed color and add frame
+        const imageData = ctx.getImageData(0, 0, width, height);
+        const palette = quantize(imageData.data, 256);
+        const index = applyPalette(imageData.data, palette);
+        gif.writeFrame(index, width, height, { palette, delay: frameDelay });
+      }
+
+      gif.finish();
+      const buffer = gif.bytes();
+      const blob = new Blob([new Uint8Array(buffer)], { type: 'image/gif' });
+
+      // Share or download
+      if (navigator.share && navigator.canShare({ files: [new File([blob], 'tree.gif', { type: 'image/gif' })] })) {
+        const file = new File([blob], 'my-christmas-tree.gif', { type: 'image/gif' });
+        await navigator.share({
+          title: 'My Christmas Tree',
+          text: 'Check out my decorated Christmas tree! 🎄',
+          files: [file],
+        });
+      } else {
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = 'my-christmas-tree.gif';
+        link.click();
+        URL.revokeObjectURL(url);
+      }
+    } catch (error) {
+      console.error('GIF creation failed:', error);
+    } finally {
+      setIsCreatingGif(false);
     }
   };
 
@@ -113,14 +205,23 @@ export default function MerryChristmas({ onClose, treeImage }: MerryChristmasPro
             🎄 Your tree looks amazing! 🎄
           </p>
 
-          {/* Share button */}
+          {/* Share buttons */}
           {treeImage && (
-            <button
-              onClick={handleShare}
-              className="mt-6 px-6 py-3 bg-white/90 hover:bg-white text-green-700 font-bold rounded-full shadow-lg hover:shadow-xl transition-all duration-200 flex items-center gap-2 mx-auto"
-            >
-              {canShare ? '📤 Share' : '💾 Download'}
-            </button>
+            <div className="mt-6 flex flex-col sm:flex-row gap-3 justify-center">
+              <button
+                onClick={handleShare}
+                className="px-6 py-3 bg-white/90 hover:bg-white text-green-700 font-bold rounded-full shadow-lg hover:shadow-xl transition-all duration-200"
+              >
+                {canShare ? '📤 Share Image' : '💾 Download Image'}
+              </button>
+              <button
+                onClick={createAnimatedGif}
+                disabled={isCreatingGif}
+                className="px-6 py-3 bg-purple-500 hover:bg-purple-600 disabled:bg-purple-300 text-white font-bold rounded-full shadow-lg hover:shadow-xl transition-all duration-200"
+              >
+                {isCreatingGif ? '⏳ Creating...' : '🎬 Share as GIF'}
+              </button>
+            </div>
           )}
         </div>
       </div>
