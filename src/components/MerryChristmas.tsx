@@ -31,8 +31,8 @@ export default function MerryChristmas({ onClose }: MerryChristmasProps) {
 
   return (
     <div className="fixed inset-0 flex items-center justify-center z-[100]">
-      {/* Backdrop */}
-      <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={onClose} />
+      {/* Backdrop - light blur to show tree */}
+      <div className="absolute inset-0 bg-black/30 backdrop-blur-[2px]" onClick={onClose} />
 
       {/* Sparkle effects */}
       {sparkles.map((sparkle) => (

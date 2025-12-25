@@ -160,11 +160,11 @@ export default function Home() {
               <ChristmasTree placedOrnaments={placedOrnaments} isNightMode={isNightMode} />
             </div>
           </div>
+        </div>
 
-          {/* Ornament Palette */}
-          <div className="flex-shrink-0 pb-4">
-            <OrnamentPalette />
-          </div>
+        {/* Ornament Palette - Full width on PC */}
+        <div className="flex-shrink-0 pb-4 px-2 lg:px-4 w-full relative z-20">
+          <OrnamentPalette />
         </div>
 
         {/* Merry Christmas animation */}

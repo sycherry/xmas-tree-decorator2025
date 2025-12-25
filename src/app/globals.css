@@ -152,33 +152,41 @@ body {
   z-index: 100;
 }
 
-/* Custom scrollbar for ornament palette */
-.scrollbar-thin::-webkit-scrollbar {
-  width: 6px;
+/* Hide native scrollbar on mobile/tablet, use custom indicator instead */
+.palette-scroll {
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE/Edge */
 }
 
-.scrollbar-thin::-webkit-scrollbar-track {
-  background: transparent;
+.palette-scroll::-webkit-scrollbar {
+  display: none; /* Chrome/Safari */
 }
 
-.scrollbar-thin::-webkit-scrollbar-thumb {
-  background: rgba(0, 128, 0, 0.3);
-  border-radius: 3px;
-}
+/* PC - show thin scrollbar */
+@media (min-width: 1024px) {
+  .palette-scroll {
+    scrollbar-width: thin;
+  }
 
-.scrollbar-thin::-webkit-scrollbar-thumb:hover {
-  background: rgba(0, 128, 0, 0.5);
-}
+  .palette-scroll::-webkit-scrollbar {
+    display: block;
+    width: 6px;
+  }
 
-/* Firefox scrollbar */
-.scrollbar-thin {
-  scrollbar-width: thin;
-  scrollbar-color: rgba(0, 128, 0, 0.3) transparent;
+  .palette-scroll::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .palette-scroll::-webkit-scrollbar-thumb {
+    background: rgba(0, 128, 0, 0.3);
+    border-radius: 3px;
+  }
 }
 
 /* Ornament palette scroll container */
 .palette-scroll {
-  max-height: calc(2.65 * (3rem + 0.5rem));
+  max-height: calc(2.2 * (3rem + 0.5rem));
 }
 
 @media (min-width: 1024px) {
