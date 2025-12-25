@@ -1,7 +1,8 @@
 'use client';
 
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 import DraggableOrnament from './DraggableOrnament';
+import ImageCropModal from './ImageCropModal';
 import { ORNAMENTS, Ornament } from './types';
 
 interface OrnamentPaletteProps {
@@ -12,6 +13,7 @@ interface OrnamentPaletteProps {
 
 export default function OrnamentPalette({ onRandom, onPhotoUpload, customOrnaments = [] }: OrnamentPaletteProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [tempImageUrl, setTempImageUrl] = useState<string | null>(null);
 
   const handlePhotoClick = () => {
     fileInputRef.current?.click();
@@ -19,19 +21,14 @@ export default function OrnamentPalette({ onRandom, onPhotoUpload, customOrnamen
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (!file || !onPhotoUpload) return;
+    if (!file) return;
 
-    // Create circular cropped image
-    const imageUrl = await cropImageToCircle(file);
-
-    const newOrnament: Ornament = {
-      id: `photo-${Date.now()}`,
-      emoji: '',
-      name: 'Photo',
-      imageUrl,
+    // Read file and show crop modal
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      setTempImageUrl(event.target?.result as string);
     };
-
-    onPhotoUpload(newOrnament);
+    reader.readAsDataURL(file);
 
     // Reset input
     if (fileInputRef.current) {
@@ -39,41 +36,22 @@ export default function OrnamentPalette({ onRandom, onPhotoUpload, customOrnamen
     }
   };
 
-  const cropImageToCircle = (file: File): Promise<string> => {
-    return new Promise((resolve) => {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        const img = new Image();
-        img.onload = () => {
-          const canvas = document.createElement('canvas');
-          const size = Math.min(img.width, img.height);
-          canvas.width = 100;
-          canvas.height = 100;
-          const ctx = canvas.getContext('2d');
-          if (!ctx) return;
+  const handleCropComplete = (croppedImageUrl: string) => {
+    if (!onPhotoUpload) return;
 
-          // Create circular clip
-          ctx.beginPath();
-          ctx.arc(50, 50, 50, 0, Math.PI * 2);
-          ctx.closePath();
-          ctx.clip();
+    const newOrnament: Ornament = {
+      id: `photo-${Date.now()}`,
+      emoji: '',
+      name: 'Photo',
+      imageUrl: croppedImageUrl,
+    };
 
-          // Draw image centered and cropped
-          const sx = (img.width - size) / 2;
-          const sy = (img.height - size) / 2;
-          ctx.drawImage(img, sx, sy, size, size, 0, 0, 100, 100);
+    onPhotoUpload(newOrnament);
+    setTempImageUrl(null);
+  };
 
-          // Add border
-          ctx.strokeStyle = '#gold';
-          ctx.lineWidth = 3;
-          ctx.stroke();
-
-          resolve(canvas.toDataURL('image/png'));
-        };
-        img.src = e.target?.result as string;
-      };
-      reader.readAsDataURL(file);
-    });
+  const handleCropCancel = () => {
+    setTempImageUrl(null);
   };
 
   return (
@@ -114,6 +92,15 @@ export default function OrnamentPalette({ onRandom, onPhotoUpload, customOrnamen
           className="hidden"
         />
       </div>
+
+      {/* Crop modal */}
+      {tempImageUrl && (
+        <ImageCropModal
+          imageUrl={tempImageUrl}
+          onCropComplete={handleCropComplete}
+          onCancel={handleCropCancel}
+        />
+      )}
     </div>
   );
 }
