@@ -165,7 +165,7 @@ export default function Home() {
             🎄 Decorate Your <span className="hidden md:inline">Christmas </span>Tree! 🎄
           </h1>
           <p className={`mt-3 text-sm md:text-base ${isNightMode ? 'text-gray-300' : 'text-gray-600'}`}>
-            Drag & drop ornaments to decorate the tree
+            No tree at home? Get into the Christmas spirit online!
           </p>
           <div className="mt-3 flex items-center justify-center gap-3">
             <button
