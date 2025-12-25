@@ -33,7 +33,7 @@ export default function DraggableOrnament({ ornament }: DraggableOrnamentProps) 
         cursor-grab active:cursor-grabbing
         transition-all duration-200
         hover:shadow-lg hover:bg-white
-        select-none
+        select-none touch-none
         ${isDragging ? 'opacity-50 scale-110 z-50' : ''}
       `}
       title={ornament.name}
