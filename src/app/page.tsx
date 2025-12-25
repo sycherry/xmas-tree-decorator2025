@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback, useRef } from 'react';
+import { useState, useCallback, useRef, useEffect } from 'react';
 import html2canvas from 'html2canvas';
 import { DndContext, DragEndEvent, DragOverlay, DragStartEvent, PointerSensor, TouchSensor, useSensor, useSensors } from '@dnd-kit/core';
 import ChristmasTree from '@/components/ChristmasTree';
@@ -8,6 +8,10 @@ import OrnamentPalette from '@/components/OrnamentPalette';
 import MerryChristmas from '@/components/MerryChristmas';
 import NightModeToggle from '@/components/NightModeToggle';
 import SnowEffect from '@/components/SnowEffect';
+import ComboSnowEffect from '@/components/ComboSnowEffect';
+import SantaReindeerCombo from '@/components/SantaReindeerCombo';
+import SantaWithGift from '@/components/SantaWithGift';
+import HintModal from '@/components/HintModal';
 import Stars from '@/components/Stars';
 import { PlacedOrnament, ORNAMENTS, Ornament } from '@/components/types';
 
@@ -18,7 +22,62 @@ export default function Home() {
   const [activeId, setActiveId] = useState<string | null>(null);
   const [treeImage, setTreeImage] = useState<string | null>(null);
   const [customOrnaments, setCustomOrnaments] = useState<Ornament[]>([]);
+  const [lastPlacedOrnamentId, setLastPlacedOrnamentId] = useState<string | null>(null);
+  const [comboSnowActive, setComboSnowActive] = useState(false);
+  const [santaReindeerActive, setSantaReindeerActive] = useState(false);
+  const [santaWithGiftActive, setSantaWithGiftActive] = useState(false);
+  const [showHintModal, setShowHintModal] = useState(false);
   const treeContainerRef = useRef<HTMLDivElement>(null);
+
+  // Auto-hide combo snow after 3 seconds
+  useEffect(() => {
+    if (comboSnowActive) {
+      const timer = setTimeout(() => {
+        setComboSnowActive(false);
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [comboSnowActive]);
+
+  // Auto-hide santa reindeer combo after 3 seconds
+  useEffect(() => {
+    if (santaReindeerActive) {
+      const timer = setTimeout(() => {
+        setSantaReindeerActive(false);
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [santaReindeerActive]);
+
+  // Check for ornament combos
+  const checkCombo = (currentOrnamentId: string) => {
+    // Snowflake + Snowman combo
+    const isSnowflake = currentOrnamentId === 'snowflake';
+    const isSnowman = currentOrnamentId === 'snowman';
+    const lastWasSnowflake = lastPlacedOrnamentId === 'snowflake';
+    const lastWasSnowman = lastPlacedOrnamentId === 'snowman';
+
+    if ((isSnowflake && lastWasSnowman) || (isSnowman && lastWasSnowflake)) {
+      setComboSnowActive(true);
+    }
+
+    // Reindeer + Santa combo
+    const isReindeer = currentOrnamentId === 'reindeer';
+    const isSanta = currentOrnamentId === 'santa';
+    const lastWasReindeer = lastPlacedOrnamentId === 'reindeer';
+    const lastWasSanta = lastPlacedOrnamentId === 'santa';
+
+    if ((isReindeer && lastWasSanta) || (isSanta && lastWasReindeer)) {
+      setSantaReindeerActive(true);
+    }
+
+    // Santa + Gift combo (stays until reset)
+    const isGift = currentOrnamentId === 'gift';
+
+    if ((isGift && lastWasSanta) || (isSanta && lastPlacedOrnamentId === 'gift')) {
+      setSantaWithGiftActive(true);
+    }
+  };
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -98,16 +157,24 @@ export default function Home() {
           y: clampedY,
         };
 
+        // Check for combo before updating
+        checkCombo(ornament.id);
+        setLastPlacedOrnamentId(ornament.id);
+
         setPlacedOrnaments((prev) => [...prev, newOrnament]);
       }
     }
-  }, [customOrnaments]);
+  }, [customOrnaments, lastPlacedOrnamentId]);
 
   const handleReset = () => {
     setPlacedOrnaments([]);
     setShowMerryChristmas(false);
     setTreeImage(null);
     setCustomOrnaments([]);
+    setLastPlacedOrnamentId(null);
+    setComboSnowActive(false);
+    setSantaReindeerActive(false);
+    setSantaWithGiftActive(false);
   };
 
   const handlePhotoUpload = (ornament: Ornament) => {
@@ -162,6 +229,11 @@ export default function Home() {
         {isNightMode && <Stars />}
         {isNightMode && <SnowEffect />}
 
+        {/* Combo effects */}
+        {comboSnowActive && <ComboSnowEffect />}
+        {santaReindeerActive && <SantaReindeerCombo />}
+        {santaWithGiftActive && <SantaWithGift />}
+
         {/* Night mode toggle */}
         <NightModeToggle isNightMode={isNightMode} onToggle={() => setIsNightMode(!isNightMode)} />
 
@@ -179,6 +251,12 @@ export default function Home() {
               className="px-4 py-2 bg-red-500 hover:bg-red-600 text-white text-sm font-bold rounded-full shadow hover:shadow-lg transition-all duration-200"
             >
               🔄 Reset
+            </button>
+            <button
+              onClick={() => setShowHintModal(true)}
+              className="px-4 py-2 bg-yellow-500 hover:bg-yellow-600 text-white text-sm font-bold rounded-full shadow hover:shadow-lg transition-all duration-200"
+            >
+              💡 Hint
             </button>
             <button
               onClick={handleComplete}
@@ -231,6 +309,9 @@ export default function Home() {
 
         {/* Merry Christmas animation */}
         {showMerryChristmas && <MerryChristmas onClose={() => setShowMerryChristmas(false)} treeImage={treeImage} treeRef={treeContainerRef} />}
+
+        {/* Hint Modal */}
+        {showHintModal && <HintModal onClose={() => setShowHintModal(false)} />}
 
         {/* Drag overlay */}
         <DragOverlay>
