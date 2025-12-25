@@ -78,8 +78,8 @@ export default function Home() {
         const finalY = activatorEvent.clientY + delta.y;
 
         // Convert to percentage relative to tree container
-        let yPercent = ((finalY - treeRect.top) / treeRect.height) * 100;
-        let xPercent = ((finalX - treeRect.left) / treeRect.width) * 100;
+        const yPercent = ((finalY - treeRect.top) / treeRect.height) * 100;
+        const xPercent = ((finalX - treeRect.left) / treeRect.width) * 100;
 
         // Get valid X range for this Y position within the tree triangle
         const { minX, maxX, clampedY } = getTreeXRange(yPercent);
