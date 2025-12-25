@@ -13,14 +13,40 @@ export default function ChristmasTree({ placedOrnaments, isNightMode }: Christma
     id: 'christmas-tree',
   });
 
-  // Generate tree lights for night mode
-  const treeLights = isNightMode ? Array.from({ length: 20 }, (_, i) => ({
-    id: i,
-    x: 20 + Math.random() * 60,
-    y: 15 + (i / 20) * 70,
-    color: ['#ff0000', '#ffff00', '#00ff00', '#0088ff', '#ff00ff'][i % 5],
-    delay: Math.random() * 2,
-  })) : [];
+  // Helper function to get valid X range for a given Y within the tree triangle
+  // Tree triangle: top (50, 10), bottom-left (10, 95), bottom-right (90, 95)
+  const getTreeXRange = (y: number) => {
+    const topY = 10;
+    const bottomY = 95;
+    const topX = 50;
+    const bottomLeftX = 10;
+    const bottomRightX = 90;
+
+    // Calculate progress from top to bottom (0 = top, 1 = bottom)
+    const progress = (y - topY) / (bottomY - topY);
+    const halfWidth = progress * ((bottomRightX - bottomLeftX) / 2);
+
+    return {
+      minX: topX - halfWidth,
+      maxX: topX + halfWidth,
+    };
+  };
+
+  // Generate tree lights for night mode within the triangle
+  const treeLights = isNightMode ? Array.from({ length: 20 }, (_, i) => {
+    const y = 15 + (i / 20) * 75; // y from 15 to 90
+    const { minX, maxX } = getTreeXRange(y);
+    const padding = 3; // Keep lights slightly inside the edge
+    const x = (minX + padding) + Math.random() * (maxX - minX - padding * 2);
+
+    return {
+      id: i,
+      x,
+      y,
+      color: ['#ff0000', '#ffff00', '#00ff00', '#0088ff', '#ff00ff'][i % 5],
+      delay: Math.random() * 2,
+    };
+  }) : [];
 
   return (
     <div

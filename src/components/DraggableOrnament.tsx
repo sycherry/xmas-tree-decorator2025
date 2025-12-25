@@ -26,10 +26,10 @@ export default function DraggableOrnament({ ornament }: DraggableOrnamentProps) 
       {...attributes}
       className={`
         ornament-item
-        flex flex-col items-center justify-center
-        p-2 md:p-3
+        flex items-center justify-center
+        p-1 md:p-2
         bg-white/80 backdrop-blur-sm
-        rounded-xl shadow-md
+        rounded-lg shadow-md
         cursor-grab active:cursor-grabbing
         transition-all duration-200
         hover:shadow-lg hover:bg-white
@@ -38,8 +38,7 @@ export default function DraggableOrnament({ ornament }: DraggableOrnamentProps) 
       `}
       title={ornament.name}
     >
-      <span className="text-2xl md:text-3xl">{ornament.emoji}</span>
-      <span className="text-xs mt-1 text-gray-600 hidden md:block">{ornament.name}</span>
+      <span className="text-xl md:text-2xl">{ornament.emoji}</span>
     </div>
   );
 }
