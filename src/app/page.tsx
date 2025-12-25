@@ -120,6 +120,29 @@ export default function Home() {
     setShowMerryChristmas(true);
   };
 
+  const handleRandom = () => {
+    const newOrnaments: PlacedOrnament[] = [];
+
+    for (let i = 0; i < 5; i++) {
+      // Pick a random ornament
+      const randomOrnament = ORNAMENTS[Math.floor(Math.random() * ORNAMENTS.length)];
+
+      // Generate random position within tree bounds
+      const yPercent = 15 + Math.random() * 60; // y from 15% to 75%
+      const { minX, maxX } = getTreeXRange(yPercent);
+      const xPercent = minX + Math.random() * (maxX - minX);
+
+      newOrnaments.push({
+        ...randomOrnament,
+        id: `${randomOrnament.id}-${Date.now()}-${i}`,
+        x: xPercent,
+        y: yPercent,
+      });
+    }
+
+    setPlacedOrnaments((prev) => [...prev, ...newOrnaments]);
+  };
+
   const activeOrnament = activeId ? ORNAMENTS.find((o) => o.id === activeId) : null;
 
   return (
@@ -172,7 +195,7 @@ export default function Home() {
 
         {/* Ornament Palette - Full width on PC */}
         <div className="flex-shrink-0 pb-4 px-2 lg:px-4 w-full relative z-20 safe-area-bottom">
-          <OrnamentPalette />
+          <OrnamentPalette onRandom={handleRandom} />
         </div>
 
         {/* Merry Christmas animation */}

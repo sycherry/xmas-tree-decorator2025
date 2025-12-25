@@ -27,7 +27,6 @@ export const ORNAMENTS: Ornament[] = [
   { id: 'diamond', emoji: '💎', name: 'Diamond' },
   { id: 'ornament', emoji: '🎪', name: 'Ornament' },
   { id: 'alien', emoji: '👽', name: 'Alien' },
-  { id: 'dinosaur', emoji: '🦖', name: 'Dinosaur' },
   { id: 'retro-game', emoji: '👾', name: 'Retro Game' },
   { id: 'controller', emoji: '🎮', name: 'Controller' },
 ];
