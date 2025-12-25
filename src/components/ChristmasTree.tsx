@@ -136,14 +136,18 @@ export default function ChristmasTree({ placedOrnaments, isNightMode }: Christma
         {placedOrnaments.map((ornament, index) => (
           <div
             key={ornament.id}
-            className="absolute transform -translate-x-1/2 -translate-y-1/2 text-2xl md:text-3xl cursor-default transition-transform hover:scale-125 drop-shadow-lg"
+            className="absolute transform -translate-x-1/2 -translate-y-1/2 cursor-default transition-transform hover:scale-125 drop-shadow-lg"
             style={{
               left: `${ornament.x}%`,
               top: `${ornament.y}%`,
               zIndex: 10 + index,
             }}
           >
-            {ornament.emoji}
+            {ornament.imageUrl ? (
+              <img src={ornament.imageUrl} alt={ornament.name} className="w-8 h-8 md:w-10 md:h-10 rounded-full object-cover border-2 border-white shadow-md" />
+            ) : (
+              <span className="text-2xl md:text-3xl">{ornament.emoji}</span>
+            )}
           </div>
         ))}
       </div>

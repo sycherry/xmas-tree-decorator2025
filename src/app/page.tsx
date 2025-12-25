@@ -9,7 +9,7 @@ import MerryChristmas from '@/components/MerryChristmas';
 import NightModeToggle from '@/components/NightModeToggle';
 import SnowEffect from '@/components/SnowEffect';
 import Stars from '@/components/Stars';
-import { PlacedOrnament, ORNAMENTS } from '@/components/types';
+import { PlacedOrnament, ORNAMENTS, Ornament } from '@/components/types';
 
 export default function Home() {
   const [placedOrnaments, setPlacedOrnaments] = useState<PlacedOrnament[]>([]);
@@ -17,6 +17,7 @@ export default function Home() {
   const [showMerryChristmas, setShowMerryChristmas] = useState(false);
   const [activeId, setActiveId] = useState<string | null>(null);
   const [treeImage, setTreeImage] = useState<string | null>(null);
+  const [customOrnaments, setCustomOrnaments] = useState<Ornament[]>([]);
   const treeContainerRef = useRef<HTMLDivElement>(null);
 
   const sensors = useSensors(
@@ -68,7 +69,7 @@ export default function Home() {
     const { active, over } = event;
 
     if (over && over.id === 'christmas-tree' && over.rect) {
-      const ornament = ORNAMENTS.find((o) => o.id === active.id);
+      const ornament = ORNAMENTS.find((o) => o.id === active.id) || customOrnaments.find((o) => o.id === active.id);
       if (ornament) {
         const treeRect = over.rect;
 
@@ -100,12 +101,17 @@ export default function Home() {
         setPlacedOrnaments((prev) => [...prev, newOrnament]);
       }
     }
-  }, []);
+  }, [customOrnaments]);
 
   const handleReset = () => {
     setPlacedOrnaments([]);
     setShowMerryChristmas(false);
     setTreeImage(null);
+    setCustomOrnaments([]);
+  };
+
+  const handlePhotoUpload = (ornament: Ornament) => {
+    setCustomOrnaments((prev) => [...prev, ornament]);
   };
 
   const handleComplete = async () => {
@@ -143,7 +149,7 @@ export default function Home() {
     setPlacedOrnaments((prev) => [...prev, ...newOrnaments]);
   };
 
-  const activeOrnament = activeId ? ORNAMENTS.find((o) => o.id === activeId) : null;
+  const activeOrnament = activeId ? (ORNAMENTS.find((o) => o.id === activeId) || customOrnaments.find((o) => o.id === activeId)) : null;
 
   return (
     <DndContext sensors={sensors} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
@@ -195,7 +201,7 @@ export default function Home() {
 
         {/* Ornament Palette - Full width on PC */}
         <div className="flex-shrink-0 pb-4 px-2 lg:px-4 w-full relative z-20 safe-area-bottom">
-          <OrnamentPalette onRandom={handleRandom} />
+          <OrnamentPalette onRandom={handleRandom} onPhotoUpload={handlePhotoUpload} customOrnaments={customOrnaments} />
         </div>
 
         {/* Merry Christmas animation */}
@@ -204,8 +210,12 @@ export default function Home() {
         {/* Drag overlay */}
         <DragOverlay>
           {activeOrnament ? (
-            <div className="text-4xl cursor-grabbing transform scale-125">
-              {activeOrnament.emoji}
+            <div className="cursor-grabbing transform scale-125">
+              {activeOrnament.imageUrl ? (
+                <img src={activeOrnament.imageUrl} alt={activeOrnament.name} className="w-12 h-12 rounded-full object-cover border-2 border-white shadow-lg" />
+              ) : (
+                <span className="text-4xl">{activeOrnament.emoji}</span>
+              )}
             </div>
           ) : null}
         </DragOverlay>

@@ -38,7 +38,11 @@ export default function DraggableOrnament({ ornament }: DraggableOrnamentProps) 
       `}
       title={ornament.name}
     >
-      <span className="text-xl md:text-2xl">{ornament.emoji}</span>
+      {ornament.imageUrl ? (
+        <img src={ornament.imageUrl} alt={ornament.name} className="w-6 h-6 md:w-7 md:h-7 rounded-full object-cover" />
+      ) : (
+        <span className="text-xl md:text-2xl">{ornament.emoji}</span>
+      )}
       <span className="hidden lg:block text-[10px] text-gray-600 truncate w-full text-center">{ornament.name}</span>
     </div>
   );

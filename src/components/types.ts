@@ -2,6 +2,7 @@ export interface Ornament {
   id: string;
   emoji: string;
   name: string;
+  imageUrl?: string;
 }
 
 export interface PlacedOrnament extends Ornament {
@@ -11,7 +12,6 @@ export interface PlacedOrnament extends Ornament {
 
 export const ORNAMENTS: Ornament[] = [
   { id: 'cookie', emoji: '🍪', name: 'Cookie' },
-  { id: 'star', emoji: '⭐', name: 'Star' },
   { id: 'red-ball', emoji: '🔴', name: 'Red Ball' },
   { id: 'gold-ball', emoji: '🟡', name: 'Gold Ball' },
   { id: 'ribbon', emoji: '🎀', name: 'Ribbon' },
