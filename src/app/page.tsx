@@ -14,6 +14,7 @@ export default function Home() {
   const [placedOrnaments, setPlacedOrnaments] = useState<PlacedOrnament[]>([]);
   const [isNightMode, setIsNightMode] = useState(false);
   const [showMerryChristmas, setShowMerryChristmas] = useState(false);
+  const [hasShownCelebration, setHasShownCelebration] = useState(false);
   const [activeId, setActiveId] = useState<string | null>(null);
 
   const sensors = useSensors(
@@ -96,19 +97,21 @@ export default function Home() {
 
         setPlacedOrnaments((prev) => {
           const updated = [...prev, newOrnament];
-          // Check if we've reached 5 ornaments
-          if (updated.length >= 5 && !showMerryChristmas) {
+          // Check if we've reached exactly 5 ornaments and haven't shown celebration yet
+          if (updated.length === 5 && !hasShownCelebration) {
             setShowMerryChristmas(true);
+            setHasShownCelebration(true);
           }
           return updated;
         });
       }
     }
-  }, [showMerryChristmas]);
+  }, [hasShownCelebration]);
 
   const handleReset = () => {
     setPlacedOrnaments([]);
     setShowMerryChristmas(false);
+    setHasShownCelebration(false);
   };
 
   const activeOrnament = activeId ? ORNAMENTS.find((o) => o.id === activeId) : null;
@@ -165,7 +168,7 @@ export default function Home() {
         </div>
 
         {/* Merry Christmas animation */}
-        {showMerryChristmas && <MerryChristmas />}
+        {showMerryChristmas && <MerryChristmas onClose={() => setShowMerryChristmas(false)} />}
 
         {/* Drag overlay */}
         <DragOverlay>
