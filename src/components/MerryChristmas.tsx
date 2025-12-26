@@ -278,7 +278,7 @@ export default function MerryChristmas({ onClose, treeImage, treeRef }: MerryChr
         {/* Close button */}
         <button
           onClick={onClose}
-          className="absolute top-3 right-3 w-8 h-8 flex items-center justify-center bg-white/20 hover:bg-white/40 rounded-full text-white text-xl transition-all"
+          className="absolute top-3 right-3 z-10 w-8 h-8 flex items-center justify-center bg-white/20 hover:bg-white/40 rounded-full text-white text-xl transition-all"
         >
           ✕
         </button>
