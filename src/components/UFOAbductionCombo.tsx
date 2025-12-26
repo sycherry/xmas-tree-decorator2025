@@ -9,7 +9,6 @@ interface UFOAbductionComboProps {
 export default function UFOAbductionCombo({ photoUrl }: UFOAbductionComboProps) {
   const [beamHeight, setBeamHeight] = useState(0);
   const [photoY, setPhotoY] = useState(80);
-  const [showText, setShowText] = useState(false);
 
   useEffect(() => {
     // Animate beam growing down
@@ -29,7 +28,6 @@ export default function UFOAbductionCombo({ photoUrl }: UFOAbductionComboProps) 
         setPhotoY((prev) => {
           if (prev <= 15) {
             clearInterval(photoInterval);
-            setShowText(true);
             return 15;
           }
           return prev - 2;
@@ -104,16 +102,6 @@ export default function UFOAbductionCombo({ photoUrl }: UFOAbductionComboProps) 
       <div className="absolute right-4 top-1/3 text-4xl animate-bounce" style={{ animationDelay: '0.8s' }}>
         👽
       </div>
-
-      {/* Text */}
-      {showText && (
-        <div
-          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-green-400 font-mono text-xl md:text-3xl font-bold text-center animate-pulse"
-          style={{ textShadow: '0 0 20px rgba(0, 255, 150, 0.8)' }}
-        >
-          WE COME IN PEACE! 👽
-        </div>
-      )}
 
       {/* Stars */}
       {[...Array(20)].map((_, i) => (

@@ -30,7 +30,7 @@ export default function SantaReindeerCombo() {
         }}
       >
         <span className="relative">
-          <span className="absolute -left-8 md:-left-12 -top-4 md:-top-6">🎅</span>
+          <span className="absolute left-12 md:left-16 -top-4 md:-top-6">🎅</span>
           <span>🦌</span>
         </span>
       </div>

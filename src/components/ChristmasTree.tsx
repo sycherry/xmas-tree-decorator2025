@@ -14,13 +14,13 @@ export default function ChristmasTree({ placedOrnaments, isNightMode }: Christma
   });
 
   // Helper function to get valid X range for a given Y within the tree triangle
-  // Tree triangle: top (50, 10), bottom-left (10, 95), bottom-right (90, 95)
+  // Tree triangle: top (50, 10), bottom-left (5, 95), bottom-right (95, 95)
   const getTreeXRange = (y: number) => {
     const topY = 10;
     const bottomY = 95;
     const topX = 50;
-    const bottomLeftX = 10;
-    const bottomRightX = 90;
+    const bottomLeftX = 5;
+    const bottomRightX = 95;
 
     // Calculate progress from top to bottom (0 = top, 1 = bottom)
     const progress = (y - topY) / (bottomY - topY);
@@ -33,8 +33,9 @@ export default function ChristmasTree({ placedOrnaments, isNightMode }: Christma
   };
 
   // Generate tree lights for night mode within the triangle
+  // Start below the star (star ends at y=23) to avoid overlap
   const treeLights = isNightMode ? Array.from({ length: 20 }, (_, i) => {
-    const y = 15 + (i / 20) * 75; // y from 15 to 90
+    const y = 25 + (i / 20) * 65; // y from 25 to 90 (below the star)
     const { minX, maxX } = getTreeXRange(y);
     const padding = 3; // Keep lights slightly inside the edge
     const x = (minX + padding) + Math.random() * (maxX - minX - padding * 2);
@@ -69,7 +70,7 @@ export default function ChristmasTree({ placedOrnaments, isNightMode }: Christma
         {/* Tree layers */}
         {/* Bottom layer */}
         <polygon
-          points="50,10 10,95 90,95"
+          points="50,10 5,95 95,95"
           fill="url(#treeGradient)"
           stroke="#1a472a"
           strokeWidth="1"
@@ -77,14 +78,14 @@ export default function ChristmasTree({ placedOrnaments, isNightMode }: Christma
 
         {/* Snow on tree edges */}
         <path
-          d="M50,10 L25,52 L30,52 L15,75 L22,75 L10,95"
+          d="M50,10 L22,52 L27,52 L10,75 L17,75 L5,95"
           fill="none"
           stroke="white"
           strokeWidth="2"
           opacity="0.6"
         />
         <path
-          d="M50,10 L75,52 L70,52 L85,75 L78,75 L90,95"
+          d="M50,10 L78,52 L73,52 L90,75 L83,75 L95,95"
           fill="none"
           stroke="white"
           strokeWidth="2"

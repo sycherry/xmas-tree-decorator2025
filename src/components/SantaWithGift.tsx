@@ -12,9 +12,10 @@ export default function SantaWithGift() {
 
   return (
     <div
-      className={`fixed top-28 md:top-32 right-4 md:right-1/4 z-40 transition-all duration-500 ${
+      className={`fixed right-4 md:right-1/4 z-40 transition-all duration-500 ${
         isVisible ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-10'
       }`}
+      style={{ top: '200px' }}
     >
       <div className="relative animate-bounce" style={{ animationDuration: '2s' }}>
         {/* Glow effect */}

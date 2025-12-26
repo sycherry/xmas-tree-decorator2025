@@ -164,7 +164,7 @@ export default function Home() {
   };
 
   // Helper function to get valid X range for a given Y within the tree triangle
-  // Tree triangle in viewBox (0-100): top (50, 10), bottom-left (10, 95), bottom-right (90, 95)
+  // Tree triangle in viewBox (0-100): top (50, 10), bottom-left (5, 95), bottom-right (95, 95)
   // We use percentage (0-100) for positioning
   const getTreeXRange = (yPercent: number) => {
     // Convert percentage to viewBox coordinates (viewBox is 0-100 for x, 0-120 for y)
@@ -172,8 +172,8 @@ export default function Home() {
     const topY = 8;
     const bottomY = 79;
     const topX = 50;
-    const bottomLeftX = 10;
-    const bottomRightX = 90;
+    const bottomLeftX = 5;
+    const bottomRightX = 95;
 
     // Clamp y to tree bounds
     const clampedY = Math.max(topY, Math.min(bottomY, yPercent));
@@ -307,15 +307,19 @@ export default function Home() {
         {spaceInvadersActive && <SpaceInvadersCombo />}
         {ufoAbductionActive && <UFOAbductionCombo photoUrl={customOrnaments[0]?.imageUrl} />}
 
-        {/* Night mode toggle */}
-        <NightModeToggle isNightMode={isNightMode} onToggle={() => setIsNightMode(!isNightMode)} />
-
         {/* Header */}
-        <header className="pt-4 text-center relative z-20 flex-shrink-0">
-          <h1 className={`text-2xl md:text-4xl font-bold ${isNightMode ? 'text-white' : 'text-green-800'} ${gameFontActive ? 'font-mono text-green-400' : ''}`} style={gameFontActive ? { textShadow: '0 0 10px rgba(0, 255, 0, 0.8)' } : {}}>
-            {gameFontActive ? '👾 DECORATE YOUR TREE! 👾' : '🎄 Decorate Your '}{!gameFontActive && <span className="hidden md:inline">Christmas </span>}{!gameFontActive && 'Tree! 🎄'}
-          </h1>
-          <p className={`mt-3 text-sm md:text-base ${isNightMode ? 'text-gray-300' : 'text-gray-600'} ${gameFontActive ? 'font-mono text-green-400' : ''}`} style={gameFontActive ? { textShadow: '0 0 5px rgba(0, 255, 0, 0.6)' } : {}}>
+        <header className="pt-4 px-4 relative z-20 flex-shrink-0">
+          <div className="flex items-center justify-between">
+            <h1 className={`text-2xl md:text-4xl font-bold ${isNightMode ? 'text-white' : 'text-green-800'} ${gameFontActive ? 'font-mono text-green-400' : ''}`} style={gameFontActive ? { textShadow: '0 0 10px rgba(0, 255, 0, 0.8)' } : {}}>
+              {gameFontActive ? '👾 DECORATE YOUR TREE! 👾' : '🎄 Decorate Your '}{!gameFontActive && <span className="hidden md:inline">Christmas </span>}{!gameFontActive && 'Tree!'}
+            </h1>
+            <NightModeToggle isNightMode={isNightMode} onToggle={() => setIsNightMode(!isNightMode)} />
+          </div>
+        </header>
+
+        {/* Subtitle */}
+        <div className="px-4 mt-2 relative z-20 text-center">
+          <p className={`text-sm md:text-base ${isNightMode ? 'text-gray-300' : 'text-gray-600'} ${gameFontActive ? 'font-mono text-green-400' : ''}`} style={gameFontActive ? { textShadow: '0 0 5px rgba(0, 255, 0, 0.6)' } : {}}>
             {gameFontActive ? 'INSERT COIN TO CONTINUE...' : 'No tree at home? Get into the Christmas spirit online!'}
           </p>
           <div className="mt-3 flex items-center justify-center gap-3">
@@ -341,7 +345,7 @@ export default function Home() {
               {gameFontActive ? '[COMPLETE]' : '🎄 Complete!'}
             </button>
           </div>
-        </header>
+        </div>
 
         {/* Snow ground for day mode - fixed at bottom */}
         {!isNightMode && (
