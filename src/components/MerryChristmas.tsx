@@ -109,32 +109,34 @@ export default function MerryChristmas({ onClose, treeImage, treeRef }: MerryChr
   const handleShare = async () => {
     if (!treeImage) return;
 
-    try {
-      // Create image with text overlay
-      const finalImage = await createImageWithText() || treeImage;
+    // Create image with text overlay
+    const finalImage = await createImageWithText() || treeImage;
 
-      // Convert base64 to blob
-      const response = await fetch(finalImage);
-      const blob = await response.blob();
-      const file = new File([blob], 'my-christmas-tree.png', { type: 'image/png' });
+    // Convert base64 to blob
+    const response = await fetch(finalImage);
+    const blob = await response.blob();
+    const file = new File([blob], 'my-christmas-tree.png', { type: 'image/png' });
 
-      // Use canShare state to decide between share and download
-      if (canShare && navigator.share && navigator.canShare({ files: [file] })) {
+    // On small screens, try to share first
+    if (canShare) {
+      try {
         await navigator.share({
           title: 'My Christmas Tree',
           text: 'Check out my decorated Christmas tree! 🎄',
           files: [file],
         });
-      } else {
-        // Download the image
-        const link = document.createElement('a');
-        link.href = finalImage;
-        link.download = 'my-christmas-tree.png';
-        link.click();
+        return;
+      } catch (error) {
+        // Share failed or cancelled, fall through to download
+        console.log('Share failed, falling back to download:', error);
       }
-    } catch (error) {
-      console.log('Share cancelled or failed:', error);
     }
+
+    // Download the image
+    const link = document.createElement('a');
+    link.href = finalImage;
+    link.download = 'my-christmas-tree.png';
+    link.click();
   };
 
   const createAnimatedGif = async () => {
@@ -206,15 +208,24 @@ export default function MerryChristmas({ onClose, treeImage, treeRef }: MerryChr
       const buffer = gif.bytes();
       const blob = new Blob([new Uint8Array(buffer)], { type: 'image/gif' });
 
-      // Share or download based on canShare state
+      // On small screens, try to share first
       const file = new File([blob], 'my-christmas-tree.gif', { type: 'image/gif' });
-      if (canShare && navigator.share && navigator.canShare({ files: [file] })) {
-        await navigator.share({
-          title: 'My Christmas Tree',
-          text: 'Check out my decorated Christmas tree! 🎄',
-          files: [file],
-        });
-      } else {
+      let shared = false;
+      if (canShare) {
+        try {
+          await navigator.share({
+            title: 'My Christmas Tree',
+            text: 'Check out my decorated Christmas tree! 🎄',
+            files: [file],
+          });
+          shared = true;
+        } catch (error) {
+          console.log('Share failed, falling back to download:', error);
+        }
+      }
+
+      // Download if not shared
+      if (!shared) {
         const url = URL.createObjectURL(blob);
         const link = document.createElement('a');
         link.href = url;
