@@ -26,13 +26,13 @@ export default function MerryChristmas({ onClose, treeImage, treeRef }: MerryChr
 
   useEffect(() => {
     // Check if mobile size (width < 768px = share, otherwise download)
-    const checkMobile = () => {
-      const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
-      setCanShare(isMobile && !!navigator.share);
+    const checkScreenSize = () => {
+      const isSmallScreen = typeof window !== 'undefined' && window.innerWidth < 768;
+      setCanShare(isSmallScreen);
     };
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
+    checkScreenSize();
+    window.addEventListener('resize', checkScreenSize);
+    return () => window.removeEventListener('resize', checkScreenSize);
   }, []);
 
   // Create image with text overlay
